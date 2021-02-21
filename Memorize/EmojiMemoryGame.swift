@@ -12,9 +12,10 @@ class EmojiMemoryGame {
     private var model: MemoryGame<String> = createMemoryGame()
     
     static func createMemoryGame() -> MemoryGame<String> {
-        let emojis: Array<String> = ["👻", "🎃", "🕸", "🧙‍♀️", "🍬"]
+        let emojis: Array<String> = ["👻", "🎃", "🕸", "🧙‍♀️", "🍬", "🕷", "🍩", "🥖", "🎄", "🥩", "🕯", "🍺"].shuffled()
         // 为什么不直接将数组传进MemoryGame的init中，让init自己生成内容？
-        return MemoryGame<String>(numberOfPairsOfCards: Int.random(in: 2...5)) { indexOfPair in emojis[indexOfPair] }
+        return MemoryGame<String>(numberOfPairsOfCards: Int.random(in: 2...5)) { indexOfPair in emojis[indexOfPair]
+        }
     }
     
     // MARK: - Access to the Model
