@@ -11,8 +11,19 @@ import Foundation
 struct MemoryGame<CardContent> {
     var cards: Array<Card>
     
-    func choose(card: Card) {
+    mutating func choose(card: Card) {
         print("Card chosen: \(card)")
+        let chosenCardIndex: Int = findIndex(of: card)
+        cards[chosenCardIndex].isFaceUp = !cards[chosenCardIndex].isFaceUp
+    }
+    
+    func findIndex(of card: Card) -> Int {
+        for index in 0..<cards.count {
+            if cards[index].id == card.id {
+                return index
+            }
+        }
+        return -1
     }
     
     init(numberOfPairsOfCards: Int, cardContentFactory: (Int) -> CardContent) {
@@ -20,9 +31,10 @@ struct MemoryGame<CardContent> {
         cards = Array<Card>()
         for pairIndex in 0..<numberOfPairsOfCards {
             let content = cardContentFactory(pairIndex)
-            cards.append(Card(isFaceUp: true, isMatched: false, content: content, id: 2*pairIndex))
-            cards.append(Card(isFaceUp: true, isMatched: false, content: content, id: 2*pairIndex + 1))
+            cards.append(Card(isFaceUp: true, isMatched: false, content: content, id: 2 * pairIndex))
+            cards.append(Card(isFaceUp: true, isMatched: false, content: content, id: 2 * pairIndex + 1))
         }
+        cards = cards.shuffled()
     }
     
     struct Card: Identifiable {
