@@ -10,15 +10,15 @@ import SwiftUI
 struct ContentView: View {
     @ObservedObject var viewModel: EmojiMemoryGame
     var body: some View {
-            HStack {
-                ForEach(viewModel.cards) { card in
-                    CardView(card: card).onTapGesture{
-                        viewModel.choose(card: card)
-                    }
-                }
+        // 为什么这里的Grid声明时不需要说明范型，即Grid<viewModel.Card, CardView>?
+        Grid(items: viewModel.cards) {card in
+            CardView(card: card).onTapGesture{
+                viewModel.choose(card: card)
             }
             .padding()
-            .foregroundColor(Color.orange)
+        }
+        .padding()
+        .foregroundColor(Color.orange)
     }
 }
 
