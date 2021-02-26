@@ -9,12 +9,16 @@
 import SwiftUI
 
 class EmojiMemoryGame: ObservableObject {
-    @Published private var model: MemoryGame<String> = createMemoryGame()
+    @Published private var model: MemoryGame<String>
+    var theme: MemoryGameTheme
     
-    static func createMemoryGame() -> MemoryGame<String> {
-        let emojis: Array<String> = ["👻", "🎃", "🕸", "🧙‍♀️", "🍬", "🕷", "🍩", "🥖", "🎄", "🥩", "🕯", "🍺"].shuffled()
-        // 为什么不直接将数组传进MemoryGame的init中，让init自己生成内容？
-        return MemoryGame<String>(numberOfPairsOfCards: Int.random(in: 2...5)) { indexOfPair in emojis[indexOfPair] }
+    init(theme: MemoryGameTheme) {
+        self.theme = theme
+        self.model = Self.createMemoryGame(theme: theme)
+    }
+    
+    static func createMemoryGame (theme: MemoryGameTheme) -> MemoryGame<String> {
+        MemoryGame<String>(numberOfPairsOfCards: theme.numOfPairOfCard) { indexOfPair in theme.emojis[indexOfPair] }
     }
     
     // MARK: - Access to the Model
@@ -30,5 +34,7 @@ class EmojiMemoryGame: ObservableObject {
         model.choose(card: card)
     }
     
-    
+    func createNewGame() {
+        self.model = Self.createMemoryGame(theme: theme)
+    }
 }

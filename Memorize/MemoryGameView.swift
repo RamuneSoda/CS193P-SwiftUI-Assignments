@@ -10,15 +10,22 @@ import SwiftUI
 struct ContentView: View {
     @ObservedObject var viewModel: EmojiMemoryGame
     var body: some View {
-        // 为什么这里的Grid声明时不需要说明范型，即Grid<viewModel.Card, CardView>?
-        Grid(items: viewModel.cards) {card in
-            CardView(card: card).onTapGesture{
-                viewModel.choose(card: card)
+        VStack {
+            Button("New Game", action: viewModel.createNewGame)
+            
+            Grid(items: viewModel.cards) {card in // 为什么这里的Grid声明时不需要说明范型，即Grid<viewModel.Card, CardView>?
+                CardView(card: card).onTapGesture{
+                    viewModel.choose(card: card)
+                }
+                .padding()
             }
-            .padding()
+            .foregroundColor(viewModel.theme.color)
+            
+            Text(viewModel.theme.name)
+                .font(/*@START_MENU_TOKEN@*/.title/*@END_MENU_TOKEN@*/)
         }
         .padding()
-        .foregroundColor(Color.orange)
+        
     }
 }
 
@@ -52,7 +59,7 @@ struct CardView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-            ContentView(viewModel: EmojiMemoryGame())
+        ContentView(viewModel: EmojiMemoryGame(theme: MemoryGameTheme.AnimalsTheme))
         
     }
 }
