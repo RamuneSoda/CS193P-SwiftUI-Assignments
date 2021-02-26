@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct Grid<Item, ItemView>: View where Item: Identifiable, ItemView: View{
+struct Grid<Item, ItemView>: View where Item: Identifiable, ItemView: View {
     var items: [Item]
     var itemView: (Item) -> ItemView
     var body: some View {

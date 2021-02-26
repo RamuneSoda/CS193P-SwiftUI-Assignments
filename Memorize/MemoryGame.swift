@@ -8,22 +8,31 @@
 
 import Foundation
 
-struct MemoryGame<CardContent> {
+struct MemoryGame<CardContent> where CardContent: Equatable{
     var cards: Array<Card>
-    
-    mutating func choose(card: Card) {
-        print("Card chosen: \(card)")
-        let chosenCardIndex: Int = findIndex(of: card)
-        cards[chosenCardIndex].isFaceUp = !cards[chosenCardIndex].isFaceUp
-    }
-    
-    func findIndex(of card: Card) -> Int {
-        for index in 0..<cards.count {
-            if cards[index].id == card.id {
-                return index
+    var indexOfTheOneAndOnlyOneFaceUpCard: Int? {
+        get {
+            cards.indices.filter { cards[$0].isFaceUp }.only
+        }
+        set {
+            for index in cards.indices {
+                cards[index].isFaceUp = index == newValue
             }
         }
-        return -1
+    }
+    
+    mutating func choose(card: Card) {
+        if let chosenCardIndex = cards.firstIndex(matching: card), !card.isFaceUp, !card.isMatched {
+            if let potentialMatchIndex = indexOfTheOneAndOnlyOneFaceUpCard { // One existed face-up-card
+                if cards[potentialMatchIndex].content == cards[chosenCardIndex].content {
+                    cards[potentialMatchIndex].isMatched = true
+                    cards[chosenCardIndex].isMatched = true
+                }
+                cards[chosenCardIndex].isFaceUp = true // The chosen card turn face-up to show user it's matched or not.
+            } else { // None existed face-up-card
+                indexOfTheOneAndOnlyOneFaceUpCard = chosenCardIndex
+            }
+        }
     }
     
     init(numberOfPairsOfCards: Int, cardContentFactory: (Int) -> CardContent) {
@@ -31,15 +40,15 @@ struct MemoryGame<CardContent> {
         cards = Array<Card>()
         for pairIndex in 0..<numberOfPairsOfCards {
             let content = cardContentFactory(pairIndex)
-            cards.append(Card(isFaceUp: true, isMatched: false, content: content, id: 2 * pairIndex))
-            cards.append(Card(isFaceUp: true, isMatched: false, content: content, id: 2 * pairIndex + 1))
+            cards.append(Card(content: content, id: 2 * pairIndex))
+            cards.append(Card(content: content, id: 2 * pairIndex + 1))
         }
         cards = cards.shuffled()
     }
     
     struct Card: Identifiable {
-        var isFaceUp: Bool
-        var isMatched: Bool
+        var isFaceUp: Bool = false
+        var isMatched: Bool = false
         var content: CardContent
         var id: Int
     }
