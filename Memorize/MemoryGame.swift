@@ -10,6 +10,9 @@ import Foundation
 
 struct MemoryGame<CardContent> where CardContent: Equatable{
     var cards: Array<Card>
+    var scores: Int = 0
+    var startTime: Date?
+    
     var indexOfTheOneAndOnlyOneFaceUpCard: Int? {
         get {
             cards.indices.filter { cards[$0].isFaceUp }.only
@@ -18,17 +21,33 @@ struct MemoryGame<CardContent> where CardContent: Equatable{
             for index in cards.indices {
                 cards[index].isFaceUp = index == newValue
             }
+            startTime = Date()
         }
     }
     
     mutating func choose(card: Card) {
         if let chosenCardIndex = cards.firstIndex(matching: card), !card.isFaceUp, !card.isMatched {
             if let potentialMatchIndex = indexOfTheOneAndOnlyOneFaceUpCard { // One existed face-up-card
-                if cards[potentialMatchIndex].content == cards[chosenCardIndex].content {
+                if cards[potentialMatchIndex].content == cards[chosenCardIndex].content { // Match
+                    let timeToChoose: TimeInterval = Date().timeIntervalSince(startTime!)
                     cards[potentialMatchIndex].isMatched = true
                     cards[chosenCardIndex].isMatched = true
+                    scores += max(Int(2.0 * (2 - timeToChoose)), 1)
+                } else { // Not Match
+                    if card.seen {
+                        scores -= 1
+                    } else {
+                        cards[chosenCardIndex].seen = true
+                    }
+                    
+                    if cards[potentialMatchIndex].seen {
+                        scores -= 1
+                    } else {
+                        cards[potentialMatchIndex].seen = true
+                    }
                 }
-                cards[chosenCardIndex].isFaceUp = true // The chosen card turn face-up to show user it's matched or not.
+                cards[chosenCardIndex].isFaceUp = true // The chosen card turn face-up.
+                startTime = nil
             } else { // None existed face-up-card
                 indexOfTheOneAndOnlyOneFaceUpCard = chosenCardIndex
             }
@@ -49,6 +68,7 @@ struct MemoryGame<CardContent> where CardContent: Equatable{
     struct Card: Identifiable {
         var isFaceUp: Bool = false
         var isMatched: Bool = false
+        var seen: Bool = false
         var content: CardContent
         var id: Int
     }

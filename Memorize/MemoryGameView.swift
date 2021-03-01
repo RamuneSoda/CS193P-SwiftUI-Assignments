@@ -11,7 +11,11 @@ struct ContentView: View {
     @ObservedObject var viewModel: EmojiMemoryGame
     var body: some View {
         VStack {
-            Button("New Game", action: viewModel.createNewGame)
+            Text(viewModel.theme.name)
+                .font(/*@START_MENU_TOKEN@*/.title/*@END_MENU_TOKEN@*/)
+            Text("Score: \(viewModel.scores)")
+                .font(.headline)
+            
             
             Grid(items: viewModel.cards) {card in // 为什么这里的Grid声明时不需要说明范型，即Grid<viewModel.Card, CardView>?
                 CardView(card: card).onTapGesture{
@@ -21,8 +25,7 @@ struct ContentView: View {
             }
             .foregroundColor(viewModel.theme.color)
             
-            Text(viewModel.theme.name)
-                .font(/*@START_MENU_TOKEN@*/.title/*@END_MENU_TOKEN@*/)
+            Button("New Game", action: viewModel.createNewGame)
         }
         .padding()
         
@@ -42,6 +45,9 @@ struct CardView: View {
                 } else {
                     if !card.isMatched {
                         RoundedRectangle(cornerRadius: 10)
+//                            .fill(LinearGradient(gradient: Gradient(colors: [.red, .blue]),
+//                                                 startPoint: .topLeading,
+//                                                 endPoint: .bottom))
                     }
                 }
             }
